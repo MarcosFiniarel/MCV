@@ -50,4 +50,28 @@ public class VehiculoController {
         
         return vehiculos;
     }
+    
+    //Insertar vehiculo
+    public void addVehiculo(Vehiculo vehiculo)throws SQLException{
+        vehiculos.add(vehiculo);
+        insertarAuto((Auto) vehiculo);
+    }
+            
+    public void insertarAuto(Auto auto)throws SQLException{
+        String sql = "INSERT INTO auto(marca,modelo,precio,patente,canPuertas) VALUES (?,?,?,?,?)";
+        Connection connection = conectorDB.getConnection();
+        PreparedStatement statement = connection.prepareStatement(sql);
+        try{
+            statement.setString(1, auto.getMarca());
+            statement.setString(2, auto.getModelo());
+            statement.setDouble(3, auto.getPrecio());
+            statement.setString(4, auto.getPatente());
+            statement.setInt(5, auto.getCanPuertas());
+            statement.executeUpdate();
+            System.out.println("Auto ingresado con exito.");
+        }catch(SQLException e){
+            e.printStackTrace();
+            System.out.println("Error al obtener los autos de la base de datos" + e.getMessage());
+        }
+    }
 }
