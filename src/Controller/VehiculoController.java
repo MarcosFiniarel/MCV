@@ -74,4 +74,79 @@ public class VehiculoController {
             System.out.println("Error al obtener los autos de la base de datos" + e.getMessage());
         }
     }
+    
+    //Buscar vehiculo
+    public Vehiculo buscarVehiculoPorCodigo(int codigo)throws SQLException{
+        String sql = "SELECT * FROM auto WHERE id = ?";
+        Connection connection = conectorDB.getConnection();
+        PreparedStatement statement = connection.prepareStatement(sql);
+        try{
+            statement.setInt(1, codigo);
+            ResultSet resultSet = statement.executeQuery();
+            if(resultSet.next()){
+                String marca = resultSet.getString("marca");
+                String modelo = resultSet.getString("modelo");
+                String patente = resultSet.getString("patente");
+                double precio = resultSet.getDouble("precio");
+                int canPuertas = resultSet.getInt("canPuertas");
+                
+                System.out.println("Auto encontraddo con exito.");
+                return new Auto(canPuertas,marca,modelo,patente,precio);
+            }
+            
+        }catch(SQLException e){
+            e.printStackTrace();
+            System.out.println("Error al buscar el auto en la base de datos" + e.getMessage());
+        }
+        
+        return null;
+    }
+    
+    //Actualizar vehiculo en base a la busqueda
+    public boolean actualizarVehiculo(int id, String marca, String modelo, String patente, double precio, int canPuertas)throws SQLException{
+        String sql = "UPDATE auto SET marca = ?, modelo = ?, precio = ?, patente = ?, canPuertas = ? WHERE id = ?";
+        Connection connection = conectorDB.getConnection();
+        PreparedStatement statement = connection.prepareStatement(sql);
+        try{
+            statement.setString(1, marca);
+            statement.setString(2, modelo);
+            statement.setDouble(3, precio);
+            statement.setString(4, patente);
+            statement.setInt(5, canPuertas);
+            statement.setInt(6, id);
+            
+            int filasActualizadas = statement.executeUpdate();
+            
+            if(filasActualizadas > 0){
+                System.out.println("Auto actualizado con exito.");
+                return true;
+            }else{
+                System.out.println("Problemas al actualizar el auto");
+                return false;
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+            System.out.println("Error al actualizar el auto de la base de datos" + e.getMessage());
+            return false;
+        }
+    }
+    
+    //Eliminar vehiculo
+    public boolean borrarVehiculoPorCodigo(int codigo)throws SQLException{
+        String sql = "DELETE FROM auto WHERE id = (?)";
+        Connection connection = conectorDB.getConnection();
+        PreparedStatement statement = connection.prepareStatement(sql);
+        try{
+            statement.setInt(1, codigo);
+            statement.executeUpdate();
+            
+            System.out.println("Auto eliminado con exito.");
+            return true;
+        }catch(SQLException e){
+            e.printStackTrace();
+            System.out.println("Error al eliminar el auto en la base de datos" + e.getMessage());
+            return false;
+        }
+        
+    }
 }
